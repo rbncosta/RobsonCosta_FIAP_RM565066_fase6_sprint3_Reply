@@ -33,7 +33,7 @@ Fluxo de dados **ESP32/Sim → CSV/INSERT → Oracle → ML (batch) → Dashboar
 - **Dashboard (Fase 4)**: Streamlit lê do Oracle, mostra **KPIs/séries** e **alertas** por threshold.
 
 ### Diagrama (referência)
-O diagrama detalhado está em `/docs/arquitetura/arquitetura.drawio` (e `arquitetura.png`) no repositório principal.
+O diagrama detalhado está em `/docs/arquitetura.png` no repositório principal.
 
 ## 4) Tecnologias & Justificativas
 - **Linguagem:** Python (ecossistema robusto para dados/ML).  
