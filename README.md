@@ -4,14 +4,6 @@
 **Banco alvo:** **Oracle** (sem API; carga via `INSERT`)  
 **Pareamento das séries:** por **`SENSOR_ID`** e **`DATA_HORA`** (bucket p/ minuto).
 
-## Mapa das Fases
-- **Fase 1 (Proposta Técnica)**: `/fase1_proposta/README.md` (retro, integrada à Sprint 4)  
-- **Fase 2 (Coleta/Simulação)**: https://github.com/rbncosta/FIAP/tree/3168e318779a00cf0699acb998784f334342bfd6/fase4-Enterprise%20Challenge  
-- **Fase 3 (Banco + ML base)**: https://github.com/rbncosta/RobsonCosta_FIAP_RM565066_fase5_sprint3_Reply  
-- **Fase 4 (Integração fim‑a‑fim)**: este repositório (Oracle + ML + Dashboard)
-
----
-
 > 📌 **Nota sobre a Enterprise Challenge - Sprint 1 - Reply (justificativa de submissão)**
 >
 > A Enterprise Challenge - Sprint 1 - Reply pedia um repositório específico (privado) entregue no prazo.
@@ -23,6 +15,14 @@
 > - O fluxo completo foi integrado aqui: **ESP32/Sim → CSV/INSERT → Oracle → ML → Dashboard**.
 > - Esta organização garante a visualização de fim-a-fim
 >   com as referências exigidas no item **4.6** do enunciado.
+
+## Mapa das Fases
+- **Fase 1 (Proposta Técnica)**: `/fase1_proposta/README.md` (retro, integrada à Sprint 4)  
+- **Fase 2 (Coleta/Simulação)**: https://github.com/rbncosta/FIAP/tree/3168e318779a00cf0699acb998784f334342bfd6/fase4-Enterprise%20Challenge  
+- **Fase 3 (Banco + ML base)**: https://github.com/rbncosta/RobsonCosta_FIAP_RM565066_fase5_sprint3_Reply  
+- **Fase 4 (Integração fim‑a‑fim)**: este repositório (Oracle + ML + Dashboard)
+
+---
 
 ## 1) Pré-requisitos
 
