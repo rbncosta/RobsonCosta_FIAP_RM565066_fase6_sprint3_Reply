@@ -1,14 +1,8 @@
-# Sprint 4 – Reply (Oracle, sem API) — MVP fim-a-fim
+# Sprint 4 – Reply - FLuxo Completo
 
-**Pipeline:** `ESP32/Simulação → CSV/INSERT → Oracle → ML → Dashboard/Alertas`  
-**Banco alvo:** **Oracle** (sem API; carga via `INSERT` SQL).  
+**Pipeline:** `ESP32/Simulação → CSV → INSERT → Oracle → ML → Dashboard/Alertas`  
+**Banco alvo:** **Oracle** (sem API; carga via `INSERT`)  
 **Pareamento das séries:** por **`SENSOR_ID`** e **`DATA_HORA`** (bucket p/ minuto).
-
-Este repositório consolida as Fases 1–4:
-- **Fase 1 (proposta/arquitetura)** – documentada em `/docs/arquitetura` e `/fase1_proposta`.
-- **Fase 2 (coleta/simulação)** – ESP32/Monitor Serial gerando leituras.
-- **Fase 3 (modelagem + ML)** – DER e treino simples com `RandomForest`.
-- **Fase 4 (integração)** – fluxo completo, observabilidade e reprodutibilidade.
 
 ---
 
@@ -17,8 +11,8 @@ Este repositório consolida as Fases 1–4:
 - **Python 3.10+** (com `venv`)
 - **Oracle** acessível via `host:port/servicename` (ex.: `localhost:1522/ORCLPDB`)
 - **sqlplus** ou Oracle SQL Developer para rodar `.sql`
-- (Opcional) **VS Code + PlatformIO/Wokwi** para simular o ESP32
-- Pacotes Python (em `requirements.txt`):
+- **VS Code + PlatformIO/Wokwi** para simular o ESP32
+- Pacotes Python:
   ```
   pandas
   numpy
@@ -32,10 +26,9 @@ Este repositório consolida as Fases 1–4:
 ### Ambiente Python (Windows PowerShell)
 
 ```powershell
-py -3.10 -m venv .venv
+py -3.13 -m venv .venv
 . .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-pip install -r requirements.txt
 ```
 
 ---
@@ -43,25 +36,25 @@ pip install -r requirements.txt
 ## 1) Estrutura do repositório
 
 ```
-/docs/arquitetura/           # .drawio/.png com a arquitetura integrada (Fase 1)
-/fase1_proposta/             # README da proposta técnica (retro)
+/docs/
+   arquitetura.png                # Fluxo da arquitetura integrada
 /ingest/
-  esp32_fase4_log_to_csv_sql.py   # conversor Serial -> CSV + script de INSERT
-  plot_from_oracle.py             # gera series_plot.png a partir do Oracle
-  plot_from_serial_csv.py         # gera series_plot.png a partir do CSV
-  esp32_serial.csv                # (entrada) CSV colado do Monitor Serial
-  series_plot.png                 # evidência do item 4.2 (gráfico da série)
+  esp32_csv_to_sql.py             # conversor Serial de CSV para script SQL de INSERT no banco de dados
+  esp32_serial.csv                # (entrada) CSV colado do terminal de simulação do ESP32
 /db/
-  schema_oracle_*.sql             # DDL (tabelas com DATA_HORA etc.)
-  seed_oracle_from_fase4_log.sql  # INSERTs gerados pelo conversor
+  schema_oracle_rm565066.sql      # Script para criação das tabelas do banco de dados
+  consultas_demo_rm565066.sql     # Script SQL de consulta das tabelas do banco de dados
+  seed_oracle_from_fase4_log.sql  # Script SQL inserir os registros no banco de dados (convertidos do arquivo CSV)
+  select_evidencia                # Evidência de execução do SELECT
 /ml/
-  train_and_infer_oracle.py       # ML (TEMP + AUX por SENSOR_ID)
-  metrics.json                    # saída com métrica (MAE)
-  pred_vs_real.png                # gráfico real vs previsto
+  train_and_infer_oracle.py       # Código do Machine Learning em Python
+  metrics.json                    # saída com métrica (MAE) do modelo de treinamento
+  pred_vs_real.png                # gráfico real vs previsto  do modelo de treinamento
 /dashboard/
-  app.py                          # Streamlit: KPIs, séries, alertas, bloco do ML
+  app.py                          # Streamlit: KPIs, séries, alertas, bloco do Machine Learning em Python
+  Relatorio_KPIs.pdf              # Evidência do Dashboard
 README.md
-requirements.txt
+
 ```
 
 ---
@@ -72,9 +65,9 @@ Defina no **mesmo terminal** em que vai rodar scripts/app:
 
 ```powershell
 # Oracle
-$env:ORA_USER="RCOSTA"
+$env:ORA_USER="SEU_USER"
 $env:ORA_PASSWORD="SUA_SENHA"
-$env:ORA_DSN="localhost:1522/ORCLPDB"
+$env:ORA_DSN="SEU_DNS"
 
 # IDs de sensores (defina conforme sua tabela SENSOR)
 # TEMP_ID = sensor de Temperatura | AUX_ID = sensor auxiliar (UMIDADE ou VIBRACAO)
@@ -83,15 +76,13 @@ $env:ORA_SENSOR_AUX_ID="2"
 $env:ORA_SENSOR_AUX_LABEL="VIBRACAO"   # mude para "UMIDADE" se for o seu caso
 ```
 
-> **Importante:** o projeto **não depende** de uma coluna `TIPO_SENSOR`. Tudo é feito por **`SENSOR_ID`**.
-
 ---
 
-## 3) Coleta & Ingestão (itens 4.2 e 4.3)
+## 3) Coleta & Ingestão
 
 ### 3.1 Coleta (ESP32/Simulação)
-- Rode seu `.ino` (Fase 4).  
-- No **Monitor Serial**, garanta linhas no formato:
+- Rode o simulador ESP32.  
+- No **Monitor Serial**, aguarde a execução por alguns minutos, localize as linhas no formato abaixo:
 
 ```
 contador,fosforo,potassio,ph,umidade,bomba
@@ -107,7 +98,7 @@ contador,fosforo,potassio,ph,umidade,bomba
 Gera o script de carga com base no CSV do Serial:
 
 ```powershell
-python ingest\esp32_fase4_log_to_csv_sql.py --start-now --log ingest\esp32_serial.csv `
+python ingest\esp32_csv_to_sql.py --start-now --log ingest\esp32_serial.csv `
   --sensor-id-temp $env:ORA_SENSOR_TEMP_ID --sensor-id-hum $env:ORA_SENSOR_AUX_ID
 ```
 
@@ -118,28 +109,15 @@ O conversor:
 
 ### 3.3 Carga no Oracle
 
-```powershell
-sqlplus $env:ORA_USER/$env:ORA_PASSWORD@$env:ORA_DSN @db\seed_oracle_from_fase4_log.sql
+```SQL Developer
+Abra o script `db/seed_oracle_from_fase4_log.sql` e execute.
 ```
-
-### 3.4 Gráfico inicial da série (evidência 4.2)
-
-- A partir do **Oracle** (últimas 24h):
-  ```powershell
-  python ingest\plot_from_oracle.py --mins 1440
-  ```
-- (Opcional) Direto do **CSV** do Serial:
-  ```powershell
-  python ingest\plot_from_serial_csv.py
-  ```
-
-Isso atualiza `ingest/series_plot.png`.
 
 ---
 
 ## 4) ML Básico Integrado (item 4.4)
 
-Treine/inira:
+Treine o modelo do Marchine Learning:
 
 ```powershell
 python ml\train_and_infer_oracle.py
@@ -154,23 +132,20 @@ O script:
   - `ml/metrics.json` (contém `MAE` e `aux_label`)
   - `ml/pred_vs_real.png` (real vs previsto nas últimas amostras)
 
-> Com poucos dados o treino/avaliação ocorre no próprio conjunto (o script avisa).
+> Mesmo com poucos dados o treino/avaliação ocorre no próprio conjunto (o script gera o alerta de poucos dados).
 
 ---
 
-## 5) Dashboard & Alertas (item 4.5)
+## 5) Dashboard & Alertas
 
 ```powershell
-# se faltar plotly:
-pip install plotly
-
 streamlit run dashboard\app.py
 ```
 
 **No app**:
 - Ajuste **Janela (min)** para cobrir a faixa de dados.
 - Use o **Threshold de temperatura (°C)**; o KPI **Alertas** muda conforme o limite.
-- **KPIs:** Leituras (janela), Temp média (°C), **AUX média** (Vibração/Umidade), Alertas.
+- **KPIs:** Leituras (janela), Temp média (°C), **AUX média** (Vibração), Alertas.
 - **Séries temporais:** Temperatura e a série Auxiliar.
 - **Bloco do modelo:** mostra `ml/metrics.json` (MAE) e `ml/pred_vs_real.png`.
 - **Debug:** *expander* com `count`, `min_temp`, `max_temp` e `threshold` atuais.
@@ -179,9 +154,9 @@ streamlit run dashboard\app.py
 
 ---
 
-## 6) Arquitetura Integrada (item 4.1)
+## 6) Arquitetura Integrada
 
-- `/docs/arquitetura/` contém o diagrama `.drawio/.png` do fluxo:  
+- `/docs/arquitetura.png/` contém o diagrama do fluxo completo:  
   **ESP32/Sim → CSV → INSERT (Oracle) → ML (batch) → Streamlit (KPIs/alertas)**  
 - Evidencie no diagrama:
   - Formatos (CSV, INSERT), periodicidade (janela do dashboard),
@@ -191,13 +166,13 @@ streamlit run dashboard\app.py
 
 ---
 
-## 7) Ordem de execução (resumo para a banca)
+## 7) Ordem de execução (resumo)
 
 ```powershell
 # 1) Variáveis
-$env:ORA_USER="RCOSTA"
+$env:ORA_USER="SEU_USER"
 $env:ORA_PASSWORD="SUA_SENHA"
-$env:ORA_DSN="localhost:1522/ORCLPDB"
+$env:ORA_DSN="SEU_DNS"
 $env:ORA_SENSOR_TEMP_ID="1"
 $env:ORA_SENSOR_AUX_ID="2"
 $env:ORA_SENSOR_AUX_LABEL="VIBRACAO"
@@ -213,30 +188,21 @@ python ml\train_and_infer_oracle.py
 # 4) Dashboard/alertas
 streamlit run dashboard\app.py
 
-# 5) Gráfico de série (evidência 4.2)
-python ingest\plot_from_oracle.py --mins 1440
 ```
 
 ---
 
 ## 8) Entregáveis (checklist)
 
-- **/docs/arquitetura/**: diagrama integrado (PNG + `.drawio`).
+- **/docs/**: diagrama integrado (PNG + `.drawio`).
 - **/ingest/**: `esp32_serial.csv` + `series_plot.png`.
 - **/db/**: DDL + `seed_oracle_from_fase4_log.sql`.
 - **/ml/**: `metrics.json` + `pred_vs_real.png`.
 - **/dashboard/**: prints do app com KPIs, séries e **alertas variando** com threshold.
-- **README**: este passo-a-passo + link do **vídeo (≤ 5 min)**.
+- **/vídeo/**: link do vídeo ?
+- **README**: este passo-a-passo**.
 
 ---
-
-## 9) Roteiro do vídeo (≤ 5 min)
-
-1. **Arquitetura** (30–40s).  
-2. **Coleta**: mostrar Serial e `esp32_serial.csv` (40s).  
-3. **Ingestão**: converter → abrir `seed_oracle_from_fase4_log.sql` → `SELECT COUNT(*)` (50s).  
-4. **ML**: rodar script, abrir `metrics.json` e `pred_vs_real.png` (60s).  
-5. **Dashboard**: séries e KPIs; **mudar Threshold** e mostrar **Alertas** mudando (2 min).
 
 ---
 
