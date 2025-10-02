@@ -4,9 +4,15 @@
 **Banco alvo:** **Oracle** (sem API; carga via `INSERT`)  
 **Pareamento das séries:** por **`SENSOR_ID`** e **`DATA_HORA`** (bucket p/ minuto).
 
+## Mapa das Fases
+- **Fase 1 (Proposta Técnica)**: `/fase1_proposta/README.md` (retro, integrada à Sprint 4)  
+- **Fase 2 (Coleta/Simulação)**: https://github.com/rbncosta/FIAP/tree/3168e318779a00cf0699acb998784f334342bfd6/fase4-Enterprise%20Challenge  
+- **Fase 3 (Banco + ML base)**: https://github.com/rbncosta/RobsonCosta_FIAP_RM565066_fase5_sprint3_Reply  
+- **Fase 4 (Integração fim‑a‑fim)**: este repositório (Oracle + ML + Dashboard)
+
 ---
 
-## 0) Pré-requisitos
+## 1) Pré-requisitos
 
 - **Python 3.10+** (com `venv`)
 - **Oracle** acessível via `host:port/servicename` (ex.: `localhost:1522/ORCLPDB`)
@@ -33,7 +39,7 @@ python -m pip install --upgrade pip
 
 ---
 
-## 1) Estrutura do repositório
+## 2) Estrutura do repositório
 
 ```
 /docs/
@@ -59,7 +65,7 @@ README.md
 
 ---
 
-## 2) Variáveis de ambiente (Oracle + sensores)
+## 3) Variáveis de ambiente (Oracle + sensores)
 
 Defina no **mesmo terminal** em que vai rodar scripts/app:
 
@@ -78,9 +84,9 @@ $env:ORA_SENSOR_AUX_LABEL="VIBRACAO"   # mude para "UMIDADE" se for o seu caso
 
 ---
 
-## 3) Coleta & Ingestão
+## 4) Coleta & Ingestão
 
-### 3.1 Coleta (ESP32/Simulação)
+### 4.1 Coleta (ESP32/Simulação)
 - Rode o simulador ESP32.  
 - No **Monitor Serial**, aguarde a execução por alguns minutos, localize as linhas no formato abaixo:
 
@@ -93,7 +99,7 @@ contador,fosforo,potassio,ph,umidade,bomba
 
 - **Copie e cole** as linhas no arquivo `ingest/esp32_serial.csv`.
 
-### 3.2 Conversão → INSERTs (sem API)
+### 4.2 Conversão → INSERTs (sem API)
 
 Gera o script de carga com base no CSV do Serial:
 
@@ -107,7 +113,7 @@ O conversor:
 - produz séries de **temperatura** e série **auxiliar** (umidade/vibração),
 - gera `db/seed_oracle_from_fase4_log.sql` com `INSERT` para as tabelas do schema.
 
-### 3.3 Carga no Oracle
+### 4.3 Carga no Oracle
 
 ```SQL Developer
 Abra o script `db/seed_oracle_from_fase4_log.sql` e execute.
@@ -115,7 +121,7 @@ Abra o script `db/seed_oracle_from_fase4_log.sql` e execute.
 
 ---
 
-## 4) ML Básico Integrado (item 4.4)
+## 5) ML Básico Integrado (item 4.4)
 
 Treine o modelo do Marchine Learning:
 
@@ -136,7 +142,7 @@ O script:
 
 ---
 
-## 5) Dashboard & Alertas
+## 6) Dashboard & Alertas
 
 ```powershell
 streamlit run dashboard\app.py
@@ -154,7 +160,7 @@ streamlit run dashboard\app.py
 
 ---
 
-## 6) Arquitetura Integrada
+## 7) Arquitetura Integrada
 
 - `/docs/arquitetura.png/` contém o diagrama do fluxo completo:  
   **ESP32/Sim → CSV → INSERT (Oracle) → ML (batch) → Streamlit (KPIs/alertas)**  
@@ -166,10 +172,10 @@ streamlit run dashboard\app.py
 
 ---
 
-## 7) Ordem de execução (resumo)
+## 8) Ordem de execução (resumo)
 
 ```powershell
-# 1) Variáveis
+# 8.1 Variáveis
 $env:ORA_USER="SEU_USER"
 $env:ORA_PASSWORD="SUA_SENHA"
 $env:ORA_DSN="SEU_DNS"
@@ -177,22 +183,22 @@ $env:ORA_SENSOR_TEMP_ID="1"
 $env:ORA_SENSOR_AUX_ID="2"
 $env:ORA_SENSOR_AUX_LABEL="VIBRACAO"
 
-# 2) Coleta -> CSV -> Conversão -> Carga
+# 8.2 Coleta -> CSV -> Conversão -> Carga
 python ingest\esp32_fase4_log_to_csv_sql.py --start-now --log ingest\esp32_serial.csv `
   --sensor-id-temp $env:ORA_SENSOR_TEMP_ID --sensor-id-hum $env:ORA_SENSOR_AUX_ID
 sqlplus $env:ORA_USER/$env:ORA_PASSWORD@$env:ORA_DSN @db\seed_oracle_from_fase4_log.sql
 
-# 3) ML
+# 8.3 ML
 python ml\train_and_infer_oracle.py
 
-# 4) Dashboard/alertas
+# 8.4 Dashboard/alertas
 streamlit run dashboard\app.py
 
 ```
 
 ---
 
-## 8) Entregáveis (checklist)
+## 9) Entregáveis (checklist)
 
 - **/docs/**: diagrama integrado (PNG + `.drawio`).
 - **/ingest/**: `esp32_serial.csv` + `series_plot.png`.
