@@ -223,14 +223,6 @@ streamlit run dashboard\app.py
 
 ---
 
-## Vídeo (até 5 min)
-
-**Assista:** [YouTube – versão não listada](https://youtu.be/https://youtu.be/HfQyn9WvJ6E)
-
-> Se preferir, clique na miniatura:
-
-[![Assistir no YouTube](https://img.youtube.com/vi/SEU_VIDEO_ID/hqdefault.jpg)](https://youtu.be/HfQyn9WvJ6E)
-
 ---
 
 ## 10) Troubleshooting
@@ -243,6 +235,15 @@ streamlit run dashboard\app.py
 
 ---
 
-## 11) Licença
+## 11) Vídeo do Youtobe
+
+**Assista:** [YouTube – versão não listada](https://youtu.be/HfQyn9WvJ6E)
+
+> Se preferir, clique na miniatura:
+
+[![Assistir no YouTube](https://img.youtube.com/vi/HfQyn9WvJ6E/hqdefault.jpg)](https://youtu.be/HfQyn9WvJ6E)
+
+
+## 12) Licença
 
 Uso acadêmico (FIAP – Challenge Reply). Componentes open-source respeitam suas respectivas licenças.
