@@ -1,12 +1,12 @@
 > **Observação de submissão – Fase 1**
 >
-> Esta pasta substitui o repositório privado solicitado na Fase 1.
+> Esta pasta substitui o repositório privado solicitado na Enterprise Challenge - Sprint 1 - Reply .
 > Como perdi o prazo de entrega, **incluí a proposta técnica e a arquitetura aqui**
 > e **integrei tudo na entrega final (Fase 4)**.
 > As referências às Fases 2 e 3 e o encadeamento fim-a-fim estão descritos
 > no README principal  e no diagrama em `/docs/arquitetura.png`.
 
-# Fase 1 — Proposta Técnica (Hermes Reply)  
+# Enterprise Challenge - Sprint 1 - Reply  
 **Projeto:** Prevenção de falhas em linha de produção com IoT + ML  
 **Entrega:** Proposta de arquitetura e pipeline de dados (documental, sem obrigatoriedade de código funcional nesta fase)
 
