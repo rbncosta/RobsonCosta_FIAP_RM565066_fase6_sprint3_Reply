@@ -45,7 +45,7 @@
 ### Ambiente Python (Windows PowerShell)
 
 ```powershell
-py -3.13 -m venv .venv
+py -3.10+ -m venv .venv
 . .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 ```
@@ -86,7 +86,7 @@ Defina no **mesmo terminal** em que vai rodar scripts/app:
 # Oracle
 $env:ORA_USER="SEU_USER"
 $env:ORA_PASSWORD="SUA_SENHA"
-$env:ORA_DSN="SEU_DNS"
+$env:ORA_DSN="SEU_DSN"
 
 # IDs de sensores (defina conforme sua tabela SENSOR)
 # TEMP_ID = sensor de Temperatura | AUX_ID = sensor auxiliar (UMIDADE ou VIBRACAO)
@@ -136,7 +136,7 @@ Abra o script `db/seed_oracle_from_fase4_log.sql` e execute.
 
 ## 5) ML Básico Integrado (item 4.4)
 
-Treine o modelo do Marchine Learning:
+Treine o modelo do Machine Learning:
 
 ```powershell
 python ml\train_and_infer_oracle.py
@@ -175,7 +175,7 @@ streamlit run dashboard\app.py
 
 ## 7) Arquitetura Integrada
 
-- `/docs/arquitetura.png/` contém o diagrama do fluxo completo:  
+- `/docs/arquitetura.png` contém o diagrama do fluxo completo:  
   **ESP32/Sim → CSV → INSERT (Oracle) → ML (batch) → Streamlit (KPIs/alertas)**  
 - Evidencie no diagrama:
   - Formatos (CSV, INSERT), periodicidade (janela do dashboard),
@@ -191,13 +191,13 @@ streamlit run dashboard\app.py
 # 8.1 Variáveis
 $env:ORA_USER="SEU_USER"
 $env:ORA_PASSWORD="SUA_SENHA"
-$env:ORA_DSN="SEU_DNS"
+$env:ORA_DSN="SEU_DSN"
 $env:ORA_SENSOR_TEMP_ID="1"
 $env:ORA_SENSOR_AUX_ID="2"
 $env:ORA_SENSOR_AUX_LABEL="VIBRACAO"
 
 # 8.2 Coleta -> CSV -> Conversão -> Carga
-python ingest\esp32_fase4_log_to_csv_sql.py --start-now --log ingest\esp32_serial.csv `
+python ingest\esp32_csv_to_sql.py --start-now --log ingest\esp32_serial.csv `
   --sensor-id-temp $env:ORA_SENSOR_TEMP_ID --sensor-id-hum $env:ORA_SENSOR_AUX_ID
 sqlplus $env:ORA_USER/$env:ORA_PASSWORD@$env:ORA_DSN @db\seed_oracle_from_fase4_log.sql
 
@@ -235,7 +235,7 @@ streamlit run dashboard\app.py
 
 ---
 
-## 11) Vídeo do Youtobe
+## 11) Vídeo do Youtube
 
 **Assista:** [YouTube – versão não listada](https://youtu.be/HfQyn9WvJ6E)
 
