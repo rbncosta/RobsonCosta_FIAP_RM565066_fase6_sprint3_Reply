@@ -12,6 +12,7 @@
 > - Esta organização garante a visualização de fim-a-fim
 >   com as referências exigidas no item **4.6** do enunciado.
 
+
 **Pipeline:** `ESP32/Simulação → CSV → INSERT → Oracle → ML → Dashboard/Alertas`  
 **Banco alvo:** **Oracle** (sem API; carga via `INSERT`)  
 **Pareamento das séries:** por **`SENSOR_ID`** e **`DATA_HORA`** (bucket p/ minuto).
