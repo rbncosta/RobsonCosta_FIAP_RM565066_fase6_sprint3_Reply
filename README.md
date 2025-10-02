@@ -12,6 +12,18 @@
 
 ---
 
+> 📌 **Nota sobre a Enterprise Challenge - Sprint 1 - Reply (justificativa de submissão)**
+>
+> A Enterprise Challenge - Sprint 1 - Reply pedia um repositório específico (privado) entregue no prazo.
+> Eu perdi o prazo de submissão e, para manter a rastreabilidade e a
+> reprodutibilidade, **consolidei a Enterprise Challenge - Sprint 1 - Reply dentro deste repositório**.
+>
+> - A proposta técnica e a arquitetura estão em **/fase1_proposta/**
+>   e **/docs/arquitetura.png**.
+> - O fluxo completo foi integrado aqui: **ESP32/Sim → CSV/INSERT → Oracle → ML → Dashboard**.
+> - Esta organização garante a visualização de fim-a-fim
+>   com as referências exigidas no item **4.6** do enunciado.
+
 ## 1) Pré-requisitos
 
 - **Python 3.10+** (com `venv`)
