@@ -18,7 +18,7 @@
 **Pareamento das séries:** por **`SENSOR_ID`** e **`DATA_HORA`** (bucket p/ minuto).
 
 ## Mapa das Fases
-- **Fase 1 (Proposta Técnica)**: `/fase1_proposta/README.md` (retro, integrada à Sprint 4)  
+- **Fase 1 (Proposta Técnica)**: [fase1_proposta/README.md](fase1_proposta/README.md) (retro, integrada à Sprint 4)
 - **Fase 2 (Coleta/Simulação)**: https://github.com/rbncosta/FIAP/tree/3168e318779a00cf0699acb998784f334342bfd6/fase4-Enterprise%20Challenge  
 - **Fase 3 (Banco + ML base)**: https://github.com/rbncosta/RobsonCosta_FIAP_RM565066_fase5_sprint3_Reply  
 - **Fase 4 (Integração fim‑a‑fim)**: este repositório (Oracle + ML + Dashboard)
