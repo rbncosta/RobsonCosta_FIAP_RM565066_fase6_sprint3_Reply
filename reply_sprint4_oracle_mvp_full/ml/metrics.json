@@ -1,0 +1,7 @@
+{
+  "model": "RandomForestRegressor",
+  "metric": "MAE",
+  "value": 1.036928766835019,
+  "aux_sensor_id": 2,
+  "aux_label": "VIBRACAO"
+}
